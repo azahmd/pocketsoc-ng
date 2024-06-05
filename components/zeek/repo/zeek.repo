@@ -1,5 +1,5 @@
 [cern-zeek]
-name=r9zeek
+name=zeek
 baseurl=https://linuxsoft.cern.ch/repos/zeek9-qa/$basearch/os/
 enabled=1
 gpgcheck=1
