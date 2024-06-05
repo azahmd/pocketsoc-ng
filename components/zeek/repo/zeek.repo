@@ -1,7 +1,7 @@
-[security_zeek]
-name=The Zeek Network Security Monitor. (CentOS_7)
-type=rpm-md
-baseurl=https://download.opensuse.org/repositories/security:/zeek/CentOS_7/
-gpgcheck=1
-gpgkey=https://download.opensuse.org/repositories/security:/zeek/CentOS_7/repodata/repomd.xml.key
+[cern-zeek]
+name=r9zeek
+baseurl=https://linuxsoft.cern.ch/repos/zeek9-qa/$basearch/os/
 enabled=1
+gpgcheck=1
+priority=1
+gpgkey=https://linuxsoft.cern.ch/repos/RPM-GPG-KEY-kojiv2
