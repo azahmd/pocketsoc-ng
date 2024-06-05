@@ -1,6 +1,6 @@
-FROM quay.io/centos/centos:stream8
+FROM rockylinux:9
 
-# RUN yum install -y git
+# RUN dnf install -y git
 
 ADD ./bin /opt/pocketsoc-ng/bin
 

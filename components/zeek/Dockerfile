@@ -1,20 +1,20 @@
-FROM quay.io/centos/centos:centos7
+FROM rockylinux:9
 
-COPY ./repo/zeek.repo /etc/yum.repos.d/
+COPY ./repo/zeek.repo /etc/dnf.repos.d/
 
-RUN yum install ethtool epel-release -y 
+RUN dnf install ethtool epel-release -y 
 
-#RUN yum install -y cmake make gcc gcc-c++ flex bison libpcap-devel openssl-devel python3 python3-devel swig zlib-devel git
+#RUN dnf install -y cmake make gcc gcc-c++ flex bison libpcap-devel openssl-devel python3 python3-devel swig zlib-devel git
 
-RUN yum install -y zeek tcpdump supervisor tcpreplay && yum update -y && \ 
-    yum clean all && rm -rf /var/cache/yum
+RUN dnf install -y zeek tcpdump supervisor tcpreplay && dnf update -y && \ 
+    dnf clean all && rm -rf /var/cache/dnf
 
 #RUN git clone --recursive https://github.com/zeek/zeek && cd ./zeek && ./configure --prefix="/opt/zeek" && make && make install
 
 RUN rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch 
-COPY ./repo/elastic-oss.repo /etc/yum.repos.d/
+COPY ./repo/elastic-oss.repo /etc/dnf.repos.d/
 
-RUN yum install -y filebeat
+RUN dnf install -y filebeat
 
 env PATH /opt/zeek/bin/:$PATH
 
