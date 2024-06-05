@@ -2,7 +2,7 @@ FROM rockylinux:9
 
 COPY ./repo/zeek.repo /etc/yum.repos.d/
 
-RUN dnf install ethtool epel-release wget -y 
+RUN dnf install ethtool epel-release wget python3.12-semantic_version -y 
 
 #RUN dnf install -y cmake make gcc gcc-c++ flex bison libpcap-devel openssl-devel python3 python3-devel swig zlib-devel git
 
