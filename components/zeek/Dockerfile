@@ -7,7 +7,7 @@ RUN dnf install ethtool epel-release wget -y
 #RUN dnf install -y cmake make gcc gcc-c++ flex bison libpcap-devel openssl-devel python3 python3-devel swig zlib-devel git
 
 RUN wget https://repo.almalinux.org/development/almalinux/9/devel/noarch/Packages/python3-semantic_version-2.8.4-7.el9.noarch.rpm
-RUN dnf localinstall python3-semantic_version-2.8.4-7.el9.noarch.rpm
+RUN dnf localinstall -y python3-semantic_version-2.8.4-7.el9.noarch.rpm
 RUN dnf config-manager --set-enabled crb
 RUN dnf clean all
 
