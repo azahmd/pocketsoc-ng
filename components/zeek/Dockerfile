@@ -16,6 +16,7 @@ RUN dnf install -y zeek tcpdump supervisor tcpreplay && dnf update -y && \
 
 #RUN git clone --recursive https://github.com/zeek/zeek && cd ./zeek && ./configure --prefix="/opt/zeek" && make && make install
 
+RUN rpm -e gpg-pubkey-d88e42b4-52371eca
 RUN rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch 
 COPY ./repo/elastic-oss.repo /etc/yum.repos.d/
 
