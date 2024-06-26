@@ -20,4 +20,6 @@ admin:
 kibanaserver:
   hash: ${envbc.ELASTIC_PASSWORD}
   reserved: true
+  backend_roles:
+  - "admin"
   description: "PocketSOC OpenSearch Dashboards user"
