@@ -7,3 +7,5 @@ COPY ./config/roles.yml /usr/share/opensearch/config/opensearch-security/
 COPY ./config/roles_mapping.yml /usr/share/opensearch/config/opensearch-security/
 
 COPY ./config/securityadmin_demo.sh /usr/share/opensearch/config/securityadmin_demo.sh
+
+RUN chmod +x /usr/share/opensearch/config/securityadmin_demo.sh
