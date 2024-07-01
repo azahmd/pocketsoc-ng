@@ -1,3 +1,9 @@
+# roles_mapping.yml
+
+_meta:
+  type: "roles_mapping"
+  config_version: 2
+
 admin_mapping:
   users:
   - "kibanaserver"
