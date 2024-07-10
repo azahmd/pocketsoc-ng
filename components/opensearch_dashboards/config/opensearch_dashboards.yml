@@ -3,7 +3,7 @@
 opensearch.hosts: [https://opensearch-node1.pocketsoc-ng_mirror:9200]
 opensearch.ssl.verificationMode: none
 opensearch.username: kibanaserver
-opensearch.password: kibanaserver
+opensearch.password: ${OPENSEARCH_INITIAL_ADMIN_PASSWORD} 
 opensearch.requestHeadersWhitelist: [authorization, securitytenant]
 
 opensearch_security.multitenancy.enabled: true
