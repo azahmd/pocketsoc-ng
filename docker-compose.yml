@@ -99,7 +99,7 @@ services:
       bash -c "
       /usr/share/opensearch/opensearch-docker-entrypoint.sh opensearch &
       sleep 30 &&
-      /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh -cd /usr/share/opensearch/config/opensearch-security -icl -nhnv -c                  acert /usr/share/opensearch/config/root-ca.pem -cert /usr/share/opensearch/config/kirk.pem -key /usr/share/opensearch/config/kirk-key.pem -h localhost -p 9200 &&
+      /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh -cd /usr/share/opensearch/config/opensearch-security -icl -nhnv -cacert /usr/share/opensearch/config/root-ca.pem -cert /usr/share/opensearch/config/kirk.pem -key /usr/share/opensearch/config/kirk-key.pem -h localhost -p 9200 &&
       wait"
 #    networks:
 #      - opensearch-net # All of the containers will join the same Docker bridge network
@@ -131,7 +131,7 @@ services:
       bash -c "
       /usr/share/opensearch/opensearch-docker-entrypoint.sh opensearch &
       sleep 30 &&
-      /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh -cd /usr/share/opensearch/config/opensearch-security -icl -nhnv -c                  acert /usr/share/opensearch/config/root-ca.pem -cert /usr/share/opensearch/config/kirk.pem -key /usr/share/opensearch/config/kirk-key.pem -h localhost -p 9200 &&
+      /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh -cd /usr/share/opensearch/config/opensearch-security -icl -nhnv -cacert /usr/share/opensearch/config/root-ca.pem -cert /usr/share/opensearch/config/kirk.pem -key /usr/share/opensearch/config/kirk-key.pem -h localhost -p 9200 &&
       wait"
 #    networks:
 #      - mirror
