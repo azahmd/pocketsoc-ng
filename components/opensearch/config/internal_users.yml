@@ -8,16 +8,19 @@ _meta:
 
 # Define your internal users here
 
-## PocketSOC users
+## Demo users
 
 admin:
-  hash: ${envbc.ELASTIC_PASSWORD}
+  hash: "$2y$12$CXc4dKBHeJ/eEsvOwEN7n.2kGPG6UPMt6Lr0Hk.ohlsfpFVQz1Cge"
   reserved: true
   backend_roles:
   - "admin"
-  description: "PocketSOC admin user"
+  description: "Demo admin user"
 
 kibanaserver:
-  hash: ${envbc.ELASTIC_PASSWORD}
+  hash: "$2y$12$CXc4dKBHeJ/eEsvOwEN7n.2kGPG6UPMt6Lr0Hk.ohlsfpFVQz1Cge"
   reserved: true
-  description: "PocketSOC OpenSearch Dashboards user"
+  backend_roles:
+  - "admin"
+  description: "Demo user for the OpenSearch Dashboards server"
+

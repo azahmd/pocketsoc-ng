@@ -67,7 +67,6 @@ services:
 #     build: ./components/opensearch
 #    build: ./components/opensearch_dashboards
 
-
   opensearch-node1: # This is also the hostname of the container within the Docker network (i.e. https://opensearch-node1/)
     image: opensearchproject/opensearch:latest # Specifying the latest available image - modify if you want a specific version
     container_name: opensearch-node1
@@ -79,7 +78,7 @@ services:
       - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2 # Nodes eligible to serve as cluster manager
       - bootstrap.memory_lock=true # Disable JVM heap memory swapping
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" # Set min and max JVM heap sizes to at least 50% of system RAM
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}    # Sets the demo admin user password when using demo configuration, required for OpenSearch 2.12 and later
     ulimits:
       memlock:
         soft: -1 # Set memlock to unlimited (no soft or hard limit)
@@ -89,12 +88,21 @@ services:
         hard: 65536
     volumes:
       - opensearch-data1:/usr/share/opensearch/data # Creates volume called opensearch-data1 and mounts it to the container
+      - ./components/opensearch/config/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml
+      - ./components/opensearch/config/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml
+      - ./components/opensearch/config/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml
+      - ./components/opensearch/config/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
     ports:
       - 9200:9200 # REST API
       - 9600:9600 # Performance Analyzer
-  #  networks:
-  #    - mirror # All of the containers will join the same Docker bridge network
-  
+    command: >
+      bash -c "
+      /usr/share/opensearch/opensearch-docker-entrypoint.sh opensearch &
+      sleep 30 &&
+      /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh -cd /usr/share/opensearch/config/opensearch-security -icl -nhnv -c                  acert /usr/share/opensearch/config/root-ca.pem -cert /usr/share/opensearch/config/kirk.pem -key /usr/share/opensearch/config/kirk-key.pem -h localhost -p 9200 &&
+      wait"
+#    networks:
+#      - opensearch-net # All of the containers will join the same Docker bridge network
   opensearch-node2:
     image: opensearchproject/opensearch:latest # This should be the same image used for opensearch-node1 to avoid issues
     container_name: opensearch-node2
@@ -106,7 +114,7 @@ services:
       - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
     ulimits:
       memlock:
         soft: -1
@@ -116,6 +124,15 @@ services:
         hard: 65536
     volumes:
       - opensearch-data2:/usr/share/opensearch/data
+      - ./components/opensearch/config/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml
+      - ./components/opensearch/config/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml
+      - ./components/opensearch/config/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml
+    command: >
+      bash -c "
+      /usr/share/opensearch/opensearch-docker-entrypoint.sh opensearch &
+      sleep 30 &&
+      /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh -cd /usr/share/opensearch/config/opensearch-security -icl -nhnv -c                  acert /usr/share/opensearch/config/root-ca.pem -cert /usr/share/opensearch/config/kirk.pem -key /usr/share/opensearch/config/kirk-key.pem -h localhost -p 9200 &&
+      wait"
 #    networks:
 #      - mirror
 
@@ -139,7 +156,8 @@ services:
     restart: always
     container_name: logstash-zeek
     environment:
-        - ELASTIC_PASSWORD=${ADMIN_PASSWORD}
+      OPENSEARCH_KIBANASERVER_PASSWORD: ${OPENSEARCH_KIBANASERVER_PASSWORD}
+#        - ELASTIC_PASSWORD=${ADMIN_PASSWORD}
     ports:
       - 5044:5044
 #    networks:
@@ -232,7 +250,7 @@ services:
       - zeek_data:/opt/pocketsoc-ng/data
     environment:
         ZEEKHOST: ${HOST_HOSTNAME}
-    #privileged: true 
+    #privileged: true
     cap_add:
       - NET_ADMIN
 #    networks:
@@ -257,7 +275,7 @@ services:
 
 # "External"
 
-## Webserver 
+## Webserver
 
   webserver:
     build: ./components/webserver/
@@ -278,7 +296,7 @@ services:
 #    build: ./components/sshserver/
 #    container_name: sshserver
 #    cap_add:
-#      - NET_ADMIN    
+#      - NET_ADMIN
 #    volumes:
 #      - sshserver_data:/opt/pocketsoc-ng/data
 #    networks:
@@ -303,13 +321,13 @@ volumes:
 #  internal:
 #    ipam:
 #      config:
-#        - 
+#        -
 #          subnet: 172.18.0.0/16
 #          gateway: 172.18.0.1
 #  mirror:
 #    ipam:
 #      config:
-#        - 
+#        -
 #          subnet: 172.20.0.0/16
 #          gateway: 172.20.0.1
 #

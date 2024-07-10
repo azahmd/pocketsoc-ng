@@ -1,0 +1,24 @@
+_meta:
+  type: "roles"
+  config_version: 2
+
+admin:
+  reserved: true
+  cluster_permissions:
+    - "cluster:admin/opensearch/indices/create"
+    - "cluster:monitor/state"
+    - "cluster:monitor/nodes/info"
+    - "cluster:monitor/health"
+  index_permissions:
+    - index_patterns:
+        - "*"
+      allowed_actions:
+        - "indices:data/write/bulk"
+        - "indices:admin/create"
+        - "indices:admin/mapping/put"
+        - "indices:admin/settings/update"
+        - "indices:admin/template/get"
+        - "indices:admin/template/put"
+        - "indices:data/read/search"
+        - "indices:data/write/index"
+        - "indices:data/write/update"
