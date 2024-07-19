@@ -28,14 +28,14 @@ services:
         MISP_PORT: 6443
         HOST_HOSTNAME: ${HOST_HOSTNAME}
         DOCUMENTATION_BASEURL: http://documentation:8000
-        DOCUMENTATION_PORT: 443
+#        DOCUMENTATION_PORT: 443
     extra_hosts:
-    - "host.docker.internal:host-gateway"
+        - "host.docker.internal:host-gateway"
     volumes:
       - certificates:/certs
     ports:
       - 443:443
-      - 6443:6443
+#      - 6443:6443
       - 8443:8443
 #    networks:
 #      - mirror
@@ -229,6 +229,7 @@ services:
         condition: service_healthy
     environment:
       - MISP_BASEURL=${MISP_BASEURL:-https://${HOST_HOSTNAME}:6443}
+      - MISP_PORT=${MISP_PORT:-6443}
       - AUTH_METHOD=${AUTH_METHOD:-misp}
       - CLAMAV_HOSTNAME=${CLAMAV_HOSTNAME:-misp_clamav}
       - FQDN=${FQDN:-misp.local}
