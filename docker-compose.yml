@@ -232,7 +232,7 @@ services:
       - MISP_PORT=${MISP_PORT:-6443}
       - AUTH_METHOD=${AUTH_METHOD:-misp}
       - CLAMAV_HOSTNAME=${CLAMAV_HOSTNAME:-misp_clamav}
-      - FQDN=${FQDN:-misp.local}
+      - FQDN=${FQDN:-${HOST_HOSTNAME}}
       - GPG_PASSPHRASE=${GPG_PASSPHRASE:-misp}
       - HTTPS_PORT=${HTTPS_PORT:-6443}
       - MISP_EMAIL_ADDRESS=${MISP_EMAIL_ADDRESS:-misp@misp.local}
