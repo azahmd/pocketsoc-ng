@@ -23,14 +23,14 @@ services:
     restart: always
     environment:
         OPENSEARCH_DASHBOARDS_BASEURL: http://opensearch-dashboards:5601
-        MISP_BASEURL: http://misp.pocketsoc-ng_default
+        MISP_BASEURL: https://web.pocketsoc-ng_default
         OPENSEARCH_DASHBOARDS_PORT: 8443
         MISP_PORT: 6443
         HOST_HOSTNAME: ${HOST_HOSTNAME}
         DOCUMENTATION_BASEURL: http://documentation:8000
         DOCUMENTATION_PORT: 443
     extra_hosts:
-    - "host.docker.internal:host-gateway"
+        - "host.docker.internal:host-gateway"
     volumes:
       - certificates:/certs
     ports:
@@ -149,7 +149,7 @@ services:
       OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200"]' # Define the OpenSearch nodes that OpenSearch Dashboards will query
       OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
     volumes:
-    - /root/pocketsoc-ng/components/opensearch_dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml 
+    - /root/pocketsoc-ng/components/opensearch_dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
     command: >
       /bin/sh -c "
       sleep 30 &&
@@ -175,77 +175,195 @@ services:
 
 # MISP
 
-  mysql:
-    image: mariadb:10.7
-    restart: always
-    container_name: misp-mysql
-    tmpfs:
-      - /tmp
-    volumes:
-      - misp_mysql_data:/var/lib/mysql/
+  clamav:
     environment:
-      MYSQL_DATABASE: misp
-      MYSQL_USER: misp
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
+      - FQDN=${FQDN:-misp.local}
+      - HTTPS_PORT=${HTTPS_PORT:-443}
+    hostname: ${CLAMAV_HOSTNAME:-misp_clamav}
+    image: clamav/clamav:1.0_base
+    restart: unless-stopped
+    volumes:
+      - ./persistent/${COMPOSE_PROJECT_NAME}/clamav_db/:/var/lib/clamav
+  db:
+    command: [mysqld, --default-authentication-plugin=mysql_native_password, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --innodb_monitor_enable=all]
+    environment:
+      - FQDN=${FQDN:-misp.local}
+      - HTTPS_PORT=${HTTPS_PORT:-443}
+      - MYSQL_DATABASE=${MYSQL_DBNAME:-misp}
+      - MYSQL_USER=${MYSQL_USERNAME:-misp}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-misp}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-misp}
+    hostname: ${MYSQL_HOSTNAME:-misp_db}
+    image: mysql/mysql-server:8.0
+    restart: unless-stopped
+    volumes:
+      - ./persistent/${COMPOSE_PROJECT_NAME}/db:/var/lib/mysql
+  modules:
+    depends_on:
+      clamav:
+        condition: service_healthy
+    environment:
+      - FQDN=${FQDN:-misp.local}
+      - HTTPS_PORT=${HTTPS_PORT:-443}
+    hostname: ${MODULES_HOSTNAME:-misp_modules}
+    image: jisccti/misp-modules:latest
+    restart: unless-stopped
+  redis:
+    entrypoint: redis-server --loglevel warning --requirepass ${REDIS_PASSWORD:-misp}
+    environment:
+      - FQDN=${FQDN:-misp.local}
+      - HTTPS_PORT=${HTTPS_PORT:-443}
+      - REDISCLI_AUTH=${REDIS_PASSWORD:-misp}
+    healthcheck:
+      test: redis-cli -e ping || exit 1
+    hostname: ${REDIS_HOST:-misp_redis}
+    image: redis:7
+    restart: unless-stopped
+  web:
+    depends_on:
+      db:
+        condition: service_healthy
+      modules:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - MISP_BASEURL=${MISP_BASEURL:-https://${HOST_HOSTNAME}:6443}
+      - MISP_PORT=${MISP_PORT:-6443}
+      - AUTH_METHOD=${AUTH_METHOD:-misp}
+      - CLAMAV_HOSTNAME=${CLAMAV_HOSTNAME:-misp_clamav}
+      - FQDN=${FQDN:-${HOST_HOSTNAME}}
+      - GPG_PASSPHRASE=${GPG_PASSPHRASE:-misp}
+      - HTTPS_PORT=${HTTPS_PORT:-6443}
+      - MISP_EMAIL_ADDRESS=${MISP_EMAIL_ADDRESS:-misp@misp.local}
+      - MISP_EMAIL_NAME=${MISP_EMAIL_NAME:-MISP}
+      - MODULES_HOSTNAME=${MODULES_HOSTNAME:-misp_modules}
+      - MYSQL_DBNAME=${MYSQL_DBNAME:-misp}
+      - MYSQL_HOSTNAME=${MYSQL_HOSTNAME:-misp_db}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-misp}
+      - MYSQL_USERNAME=${MYSQL_USERNAME:-misp}
+      - ORG_NAME=${ORG_NAME:-ORGNAME}
+      - REDIS_HOST=${REDIS_HOST:-misp_redis}
+      - REDIS_MISP_DB=${REDIS_MISP_DB:-2}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-misp}
+      - REDIS_WORKER_DB=${REDIS_MISP_DB:-3}
+      - REQUIRE_TOTP=${REQUIRE_TOTP:-true}
+      - SHIBB_ADMIN_ROLE=${SHIBB_ADMIN_ROLE:-misp-admin}
+      - SHIBB_BLOCK_ORG_CHANGE=${SHIBB_BLOCK_ORG_CHANGE:-false}
+      - SHIBB_BLOCK_ROLE_CHANGE=${SHIBB_BLOCK_ROLE_CHANGE:-false}
+      - SHIBB_DEFAULT_ROLE=${SHIBB_DEFAULT_ROLE:-false}
+      - SHIBB_ORG_ADMIN_ROLE=${SHIBB_ORG_ADMIN_ROLE:-misp-orgadmin}
+      - SHIBB_PUBLISHER_ROLE=${SHIBB_PUBLISHER_ROLE:-misp-publisher}
+      - SHIBB_READONLY_ROLE=${SHIBB_READONLY_ROLE:-misp-readonly}
+      - SHIBB_SYNC_ROLE=${SHIBB_SYNC_ROLE:-misp-sync}
+      - SHIBB_USER_ROLE=${SHIBB_USER_ROLE:-misp-user}
+      - SMTP_HOSTNAME=${SMTP_HOSTNAME:-localhost}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-misp}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_STARTTLS=${SMTP_STARTTLS:-true}
+      - SMTP_USERNAME=${SMTP_USERNAME:-misp}
+      - WORKERS_HOSTNAME=${WORKERS_HOSTNAME:-misp_workers}
+      - WORKERS_PASSWORD=${WORKERS_PASSWORD:-misp}
+    hostname: ${MISP_HOSTNAME:-misp_web}
+    image: jisccti/misp-web:latest
+#    ports:
+#      - ${HTTP_PORT:-80}:80
+#      - ${HTTPS_PORT:-443}:443
+    restart: unless-stopped
+    volumes:
+      - ./persistent/${COMPOSE_PROJECT_NAME}/data/:/var/www/MISPData
+      - ./persistent/${COMPOSE_PROJECT_NAME}/gpg/:/var/www/MISPGnuPG
+      - ./persistent/${COMPOSE_PROJECT_NAME}/tls/:/etc/ssl/private
+  workers:
+    depends_on:
+      web:
+        condition: service_started
+    environment:
+      - FQDN=${FQDN:-misp.local}
+      - HTTPS_PORT=${HTTPS_PORT:-443}
+      - ORG_NAME=${ORG_NAME:-ORGNAME}
+      - ORG_UUID=${ORG_UUID:-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}
+      - REDIS_HOST=${REDIS_HOST:-misp_redis}
+      - WORKERS_PASSWORD=${WORKERS_PASSWORD:-misp}
+    hostname: ${WORKERS_HOSTNAME:-misp_workers}
+    image: jisccti/misp-workers:latest
+    restart: unless-stopped
+    volumes:
+      - ./persistent/${COMPOSE_PROJECT_NAME}/data/:/var/www/MISPData
+      - ./persistent/${COMPOSE_PROJECT_NAME}/gpg/:/var/www/MISPGnuPG
+
+#  mysql:
+#    image: mariadb:10.7
+#    restart: always
+#    container_name: misp-mysql
+#    tmpfs:
+#      - /tmp
+#    volumes:
+#      - misp_mysql_data:/var/lib/mysql/
+#    environment:
+#      MYSQL_DATABASE: misp
+#      MYSQL_USER: misp
+#      MYSQL_PASSWORD: password
+#      MYSQL_ROOT_PASSWORD: password
 #    networks:
 #      - mirror
 
-  redis:
-    image: redis:6.2
-    restart: always
-    container_name: misp-redis
+#  redis:
+#    image: redis:6.2
+#    restart: always
+#    container_name: misp-redis
 #    networks:
 #      mirror:
 
-  misp-modules:
-    image: ghcr.io/nukib/misp-modules:latest
-    restart: always
-    container_name: misp-modules
-    cap_drop:
-      - NET_RAW
-      - SYS_CHROOT
-      - MKNOD
-      - NET_BIND_SERVICE
-      - AUDIT_WRITE
-      - SETFCAP
+#  misp-modules:
+#    image: ghcr.io/nukib/misp-modules:latest
+#    restart: always
+#    container_name: misp-modules
+#    cap_drop:
+#      - NET_RAW
+#      - SYS_CHROOT
+#      - MKNOD
+#      - NET_BIND_SERVICE
+#      - AUDIT_WRITE
+#      - SETFCAP
 #    networks:
 #      mirror:
 
-  misp:
-    build: ./components/misp/
-    restart: always
-    container_name: misp
-    depends_on:
-      - mysql
-      - redis
-    tmpfs:
-      - /tmp
-    cap_drop:
-      - NET_RAW
-      - SYS_CHROOT
-      - MKNOD
-      - AUDIT_WRITE
-      - SETFCAP
-    volumes:
-      - misp_data:/var/www/MISP/app/
-    environment:
-      MYSQL_HOST: misp-mysql
-      MYSQL_LOGIN: misp
-      MYSQL_PASSWORD: password # Please change for production
-      MYSQL_DATABASE: misp
-      REDIS_HOST: misp-redis
-      MISP_BASEURL: https://${HOST_HOSTNAME}:6443
-      MISP_PASSWORD: ${ADMIN_PASSWORD}
-      MISP_UUID: 86186CBF-6940-4354-857D-2C1C93F8FFC0 # PocketSOC use only
-      MISP_ORG: PocketSOC # Please change for production
-      MISP_MODULE_URL: http://misp-modules
-      MISP_EMAIL: null@example.com # Please change for production
-      SECURITY_SALT: MpqM8ofrPtedU70wTzDWIs5R6dwqRAZDMKuzJeK5neo= # PocketSOC use only
-      ZEROMQ_ENABLED: "yes"
-    ports:
+#  misp:
+#    build: ./components/misp/
+#    restart: always
+#    container_name: misp
+#    depends_on:
+#      - mysql
+#      - redis
+#    tmpfs:
+#      - /tmp
+#    cap_drop:
+#
+#      - NET_RAW
+#      - SYS_CHROOT
+#      - MKNOD
+#      - AUDIT_WRITE
+#      - SETFCAP
+#    volumes:
+#      - misp_data:/var/www/MISP/app/
+#    environment:
+#      MYSQL_HOST: misp-mysql
+#      MYSQL_LOGIN: misp
+#      MYSQL_PASSWORD: password # Please change for production
+#      MYSQL_DATABASE: misp
+#      REDIS_HOST: misp-redis
+#      MISP_BASEURL: https://${HOST_HOSTNAME}:6443
+#      MISP_PASSWORD: ${ADMIN_PASSWORD}
+#      MISP_UUID: 86186CBF-6940-4354-857D-2C1C93F8FFC0 # PocketSOC use only
+#      MISP_ORG: PocketSOC # Please change for production
+#      MISP_MODULE_URL: http://misp-modules
+#      MISP_EMAIL: null@example.com # Please change for production
+#      SECURITY_SALT: MpqM8ofrPtedU70wTzDWIs5R6dwqRAZDMKuzJeK5neo= # PocketSOC use only
+#      ZEROMQ_ENABLED: "yes"
+#    ports:
 #      - 8080:80
-      - 127.0.0.1:50000:50000
+#      - 127.0.0.1:50000:50000
 #    networks:
 #      - mirror
 
