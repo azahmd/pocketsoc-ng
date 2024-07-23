@@ -228,13 +228,13 @@ services:
       redis:
         condition: service_healthy
     environment:
-      - MISP_BASEURL=${MISP_BASEURL:-https://${HOST_HOSTNAME}:6443}
+      - MISP_BASEURL=${MISP_BASEURL:-https://${HOST_HOSTNAME}:443}
       - MISP_PORT=${MISP_PORT:-6443}
       - AUTH_METHOD=${AUTH_METHOD:-misp}
       - CLAMAV_HOSTNAME=${CLAMAV_HOSTNAME:-misp_clamav}
       - FQDN=${FQDN:-${HOST_HOSTNAME}}
       - GPG_PASSPHRASE=${GPG_PASSPHRASE:-misp}
-      - HTTPS_PORT=${HTTPS_PORT:-6443}
+      - HTTPS_PORT=${HTTPS_PORT:-443}
       - MISP_EMAIL_ADDRESS=${MISP_EMAIL_ADDRESS:-misp@misp.local}
       - MISP_EMAIL_NAME=${MISP_EMAIL_NAME:-MISP}
       - MODULES_HOSTNAME=${MODULES_HOSTNAME:-misp_modules}
