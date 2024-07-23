@@ -17,26 +17,26 @@ services:
 #      - internal
 #      - mirror
 
-  reverse-proxy:
-    build: ./components/reverse-proxy/
-    container_name: reverse-proxy
-    restart: always
-    environment:
-        OPENSEARCH_DASHBOARDS_BASEURL: http://opensearch-dashboards:5601
-        MISP_BASEURL: https://web.pocketsoc-ng_default
-        OPENSEARCH_DASHBOARDS_PORT: 8443
-        MISP_PORT: 6443
-        HOST_HOSTNAME: ${HOST_HOSTNAME}
-        DOCUMENTATION_BASEURL: http://documentation:8000
-        DOCUMENTATION_PORT: 443
-    extra_hosts:
-        - "host.docker.internal:host-gateway"
-    volumes:
-      - certificates:/certs
-    ports:
-      - 443:443
-      - 6443:6443
-      - 8443:8443
+#  reverse-proxy:
+#    build: ./components/reverse-proxy/
+#    container_name: reverse-proxy
+#    restart: always
+#    environment:
+#        OPENSEARCH_DASHBOARDS_BASEURL: http://opensearch-dashboards:5601
+#        MISP_BASEURL: https://web.pocketsoc-ng_default
+#        OPENSEARCH_DASHBOARDS_PORT: 8443
+#        MISP_PORT: 6443
+#        HOST_HOSTNAME: ${HOST_HOSTNAME}
+#        DOCUMENTATION_BASEURL: http://documentation:8000
+#        DOCUMENTATION_PORT: 443
+#    extra_hosts:
+#        - "host.docker.internal:host-gateway"
+#    volumes:
+#      - certificates:/certs
+#    ports:
+#      - 443:443
+#      - 6443:6443
+#      - 8443:8443
 #    networks:
 #      - mirror
 
@@ -266,9 +266,9 @@ services:
       - WORKERS_PASSWORD=${WORKERS_PASSWORD:-misp}
     hostname: ${MISP_HOSTNAME:-misp_web}
     image: jisccti/misp-web:latest
-#    ports:
-#      - ${HTTP_PORT:-80}:80
-#      - ${HTTPS_PORT:-443}:443
+    ports:
+      - ${HTTP_PORT:-80}:80
+      - ${HTTPS_PORT:-443}:443
     restart: unless-stopped
     volumes:
       - ./persistent/${COMPOSE_PROJECT_NAME}/data/:/var/www/MISPData
