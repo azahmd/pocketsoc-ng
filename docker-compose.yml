@@ -88,10 +88,10 @@ services:
         hard: 65536
     volumes:
       - opensearch-data1:/usr/share/opensearch/data # Creates volume called opensearch-data1 and mounts it to the container
-      - /root/pocketsoc-ng/components/opensearch/config/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml
-      - /root/pocketsoc-ng/components/opensearch/config/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml
-      - /root/pocketsoc-ng/components/opensearch/config/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml
-      - /root/pocketsoc-ng/components/opensearch/config/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+      - ./components/opensearch/config/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml
+      - ./components/opensearch/config/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml
+      - ./components/opensearch/config/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml
+      - ./components/opensearch/config/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
     ports:
       - 9200:9200 # REST API
       - 9600:9600 # Performance Analyzer
@@ -124,10 +124,10 @@ services:
         hard: 65536
     volumes:
       - opensearch-data2:/usr/share/opensearch/data
-      - /root/pocketsoc-ng/components/opensearch/config/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml
-      - /root/pocketsoc-ng/components/opensearch/config/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml
-      - /root/pocketsoc-ng/components/opensearch/config/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml
-      - /root/pocketsoc-ng/components/opensearch/config/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+      - ./components/opensearch/config/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml
+      - ./components/opensearch/config/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml
+      - ./components/opensearch/config/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml
+      - ./components/opensearch/config/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
     command: >
       bash -c "
       /usr/share/opensearch/opensearch-docker-entrypoint.sh"
@@ -149,7 +149,7 @@ services:
       OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200"]' # Define the OpenSearch nodes that OpenSearch Dashboards will query
       OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
     volumes:
-    - /root/pocketsoc-ng/components/opensearch_dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
+    - ./components/opensearch_dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
     command: >
       /bin/sh -c "
       sleep 30 &&
