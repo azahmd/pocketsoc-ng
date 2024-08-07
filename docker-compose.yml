@@ -264,6 +264,7 @@ services:
       - SMTP_USERNAME=${SMTP_USERNAME:-misp}
       - WORKERS_HOSTNAME=${WORKERS_HOSTNAME:-misp_workers}
       - WORKERS_PASSWORD=${WORKERS_PASSWORD:-misp}
+      - TRUSTED_PROXY=1
     hostname: ${MISP_HOSTNAME:-misp_web}
     image: jisccti/misp-web:latest
     ports:
