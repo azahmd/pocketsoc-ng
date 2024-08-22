@@ -13,7 +13,8 @@ opensearch_security.cookie.secure: false
 server.host: '0.0.0.0'
 
 server.ssl.enabled: true
-server.ssl.certificate: /certs/server.crt
-server.ssl.key: /certs/server.key
-opensearch.ssl.verificationMode: certificate
-opensearch.ssl.certificateAuthorities: ["/certs/server.crt"]
+server.ssl.certificate: /usr/share/opensearch-dashboards/config/client-cert.pem
+server.ssl.key: /usr/share/opensearch-dashboards/config/client-cert-key.pem
+opensearch.hosts: ["https://localhost:9200"]
+opensearch.ssl.verificationMode: full
+opensearch.ssl.certificateAuthorities: [ "/usr/share/opensearch-dashboards/config/root-ca.pem", "/usr/share/opensearch-dashboards/config/intermediate-ca.pem" ]
