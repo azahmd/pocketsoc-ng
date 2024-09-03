@@ -229,12 +229,12 @@ services:
         condition: service_healthy
     environment:
 #      - MISP_BASEURL=${MISP_BASEURL:-https://${HOST_HOSTNAME}:443}
-      - MISP_BASEURL=${MISP_BASEURL:-https://${MISP_BASEURL}}
+#      - MISP_BASEURL=${MISP_BASEURL:-https://${MISP_BASEURL}}
       - MISP_PORT=${MISP_PORT:-6443}
       - AUTH_METHOD=${AUTH_METHOD:-misp}
       - CLAMAV_HOSTNAME=${CLAMAV_HOSTNAME:-misp_clamav}
 #      - FQDN=${FQDN:-${HOST_HOSTNAME}}
-      - FQDN=${FQDN:-${MISP_HOSTNAME}}
+      - FQDN=${FQDN:-${MISP_BASEURL}}
       - GPG_PASSPHRASE=${GPG_PASSPHRASE:-misp}
       - HTTPS_PORT=${HTTPS_PORT:-443}
       - MISP_EMAIL_ADDRESS=${MISP_EMAIL_ADDRESS:-misp@misp.local}
