@@ -229,7 +229,7 @@ services:
         condition: service_healthy
     environment:
 #      - MISP_BASEURL=${MISP_BASEURL:-https://${HOST_HOSTNAME}:443}
-      - MISP_BASEURL=${MISP_BASEURL:-https://${MISP_BASEURL}}
+      - MISP_BASEURL=${MISP_BASEURL:-https://${MISP_HOSTNAME}}
       - MISP_PORT=${MISP_PORT:-6443}
       - AUTH_METHOD=${AUTH_METHOD:-misp}
       - CLAMAV_HOSTNAME=${CLAMAV_HOSTNAME:-misp_clamav}
