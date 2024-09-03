@@ -234,7 +234,7 @@ services:
       - AUTH_METHOD=${AUTH_METHOD:-misp}
       - CLAMAV_HOSTNAME=${CLAMAV_HOSTNAME:-misp_clamav}
 #      - FQDN=${FQDN:-${HOST_HOSTNAME}}
-      - FQDN=${FQDN:-${MISP_BASEURL}}
+      - FQDN=${FQDN:-${MISP_HOSTNAME}}
       - GPG_PASSPHRASE=${GPG_PASSPHRASE:-misp}
       - HTTPS_PORT=${HTTPS_PORT:-443}
       - MISP_EMAIL_ADDRESS=${MISP_EMAIL_ADDRESS:-misp@misp.local}
