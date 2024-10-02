@@ -11,8 +11,7 @@ if [ -z "$OPENSEARCH_INITIAL_ADMIN_PASSWORD" ]; then
 
 fi
 
-
-PASSWORD_HASH=(/usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -p "$OPENSEARCH_INITIAL_ADMIN_PASSWORD" | grep -v \*)
+PASSWORD_HASH=`echo $OPENSEARCH_INITIAL_ADMIN_PASSWORD | xargs -I {} /usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -p {} | grep -v \*`
 
 if [ -z "$PASSWORD_HASH" ]; then
   echo "ERROR: failed to generate password hash!"
