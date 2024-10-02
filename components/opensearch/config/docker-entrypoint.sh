@@ -1,5 +1,10 @@
 #!/bin/bash
 
+chown opensearch:opensearch /usr/share/opensearch/config/opensearch-security/internal_users.yml
+chown opensearch:opensearch /usr/share/opensearch/config/opensearch-security/roles.yml
+chown opensearch:opensearch /usr/share/opensearch/config/opensearch-security/roles_mapping.yml
+chown opensearch:opensearch /usr/share/opensearch/bin/adminpassword.sh
+
 echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD: $OPENSEARCH_INITIAL_ADMIN_PASSWORD"
 
 
