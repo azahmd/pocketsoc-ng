@@ -1,19 +1,27 @@
 #! /bin/bash
 
-echo test
+set -e
 
-exit 0
+echo "Generating password hash..."
+
+if [ -z "$OPENSEARCH_INITIAL_ADMIN_PASSWORD" ]; then
+
+  echo "ERROR: OPENSEARCH_INITIAL_ADMIN_PASSWORD environment is not set!"
+  exit 1
+
+fi
+
+PASSWORD_HASH=$(/usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -p "$OPENSEARCH_INITIAL_ADMIN_PASSWORD")
+PASSWORD_HASH=$(echo "$PASSWORD_HASH" | grep -v '\*')
+
+if [ -z "$PASSWORD_HASH" ]; then
+  echo "ERROR: failed to generate password hash!"
+  exit 1
+fi
 
 USERFILE="/usr/share/opensearch/config/opensearch-security/internal_users.yml"
 
-PASSWORD_HASH=`echo $ELASTIC_PASSWORD | xargs -I {} /usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -p {} | grep -v \*`
-
 cat << EOF > $USERFILE
-EOF
----
-# This is the internal user database
-# The hash value is a bcrypt hash and can be generated with plugin/tools/hash.sh
-
 _meta:
   type: "internalusers"
   config_version: 2
@@ -32,5 +40,7 @@ admin:
 kibanaserver:
   hash: "$PASSWORD_HASH"
   reserved: true
+  backend_roles:
+  - "admin"
   description: "PocketSOC-NG OpenSearch Dashboards user"
 EOF

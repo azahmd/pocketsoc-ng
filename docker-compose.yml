@@ -92,6 +92,7 @@ services:
       - ${USER_HOME}/pocketsoc-ng/components/opensearch/config/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml
       - ${USER_HOME}/pocketsoc-ng/components/opensearch/config/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml
       - ${USER_HOME}/pocketsoc-ng/components/opensearch/config/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+      - ${USER_HOME}/pocketsoc-ng/components/opensearch/bin/adminpassword.sh:/usr/share/opensearch/bin/adminpassword.sh:rw
     ports:
       - 9200:9200 # REST API
       - 9600:9600 # Performance Analyzer
@@ -128,6 +129,7 @@ services:
       - ${USER_HOME}/pocketsoc-ng/components/opensearch/config/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml
       - ${USER_HOME}/pocketsoc-ng/components/opensearch/config/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml
       - ${USER_HOME}/pocketsoc-ng/components/opensearch/config/docker-entrypoint.sh:/usr/local/bin/docker-entrypoint.sh
+      - ${USER_HOME}/pocketsoc-ng/components/opensearch/bin/adminpassword.sh:/usr/share/opensearch/bin/adminpassword.sh:rw
     command: >
       bash -c "
       /usr/share/opensearch/opensearch-docker-entrypoint.sh"
