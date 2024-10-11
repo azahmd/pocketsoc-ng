@@ -153,6 +153,7 @@ services:
     volumes:
     - ${USER_HOME}/pocketsoc-ng/components/opensearch_dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
     - certificates:/usr/share/opensearch-dashboards/config/certs
+    - ${USER_HOME}/root-ca.pem:/usr/share/opensearch-dashboards/config/certs
     command: >
       /bin/sh -c "
       sleep 30 &&
