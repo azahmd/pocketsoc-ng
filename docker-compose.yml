@@ -17,29 +17,6 @@ services:
 #      - internal
 #      - mirror
 
-#  reverse-proxy:
-#    build: ./components/reverse-proxy/
-#    container_name: reverse-proxy
-#    restart: always
-#    environment:
-#        OPENSEARCH_DASHBOARDS_BASEURL: http://opensearch-dashboards:5601
-#        MISP_BASEURL: https://web.pocketsoc-ng_default
-#        OPENSEARCH_DASHBOARDS_PORT: 8443
-#        MISP_PORT: 6443
-#        HOST_HOSTNAME: ${HOST_HOSTNAME}
-#        DOCUMENTATION_BASEURL: http://documentation:8000
-#        DOCUMENTATION_PORT: 443
-#    extra_hosts:
-#        - "host.docker.internal:host-gateway"
-#    volumes:
-#      - certificates:/certs
-#    ports:
-#      - 443:443
-#      - 6443:6443
-#      - 8443:8443
-#    networks:
-#      - mirror
-
   documentation_builder:
       build: ./components/documentation_builder/
       container_name: documentation_builder
@@ -232,12 +209,8 @@ services:
       redis:
         condition: service_healthy
     environment:
-#      - MISP_BASEURL=${MISP_BASEURL:-https://${HOST_HOSTNAME}:443}
-#      - MISP_BASEURL=${MISP_BASEURL:-https://MISP_BASEURL}}
-#      - MISP_PORT=${MISP_PORT:-6443}
       - AUTH_METHOD=${AUTH_METHOD:-misp}
       - CLAMAV_HOSTNAME=${CLAMAV_HOSTNAME:-misp_clamav}
-#      - FQDN=${FQDN:-${HOST_HOSTNAME}}
       - FQDN=${FQDN:-${MISP_BASEURL}}
       - GPG_PASSPHRASE=${GPG_PASSPHRASE:-misp}
       - HTTPS_PORT=${HTTPS_PORT:-443}
@@ -298,81 +271,6 @@ services:
     volumes:
       - ./persistent/${COMPOSE_PROJECT_NAME}/data/:/var/www/MISPData
       - ./persistent/${COMPOSE_PROJECT_NAME}/gpg/:/var/www/MISPGnuPG
-
-#  mysql:
-#    image: mariadb:10.7
-#    restart: always
-#    container_name: misp-mysql
-#    tmpfs:
-#      - /tmp
-#    volumes:
-#      - misp_mysql_data:/var/lib/mysql/
-#    environment:
-#      MYSQL_DATABASE: misp
-#      MYSQL_USER: misp
-#      MYSQL_PASSWORD: password
-#      MYSQL_ROOT_PASSWORD: password
-#    networks:
-#      - mirror
-
-#  redis:
-#    image: redis:6.2
-#    restart: always
-#    container_name: misp-redis
-#    networks:
-#      mirror:
-
-#  misp-modules:
-#    image: ghcr.io/nukib/misp-modules:latest
-#    restart: always
-#    container_name: misp-modules
-#    cap_drop:
-#      - NET_RAW
-#      - SYS_CHROOT
-#      - MKNOD
-#      - NET_BIND_SERVICE
-#      - AUDIT_WRITE
-#      - SETFCAP
-#    networks:
-#      mirror:
-
-#  misp:
-#    build: ./components/misp/
-#    restart: always
-#    container_name: misp
-#    depends_on:
-#      - mysql
-#      - redis
-#    tmpfs:
-#      - /tmp
-#    cap_drop:
-#
-#      - NET_RAW
-#      - SYS_CHROOT
-#      - MKNOD
-#      - AUDIT_WRITE
-#      - SETFCAP
-#    volumes:
-#      - misp_data:/var/www/MISP/app/
-#    environment:
-#      MYSQL_HOST: misp-mysql
-#      MYSQL_LOGIN: misp
-#      MYSQL_PASSWORD: password # Please change for production
-#      MYSQL_DATABASE: misp
-#      REDIS_HOST: misp-redis
-#      MISP_BASEURL: https://${HOST_HOSTNAME}:6443
-#      MISP_PASSWORD: ${ADMIN_PASSWORD}
-#      MISP_UUID: 86186CBF-6940-4354-857D-2C1C93F8FFC0 # PocketSOC use only
-#      MISP_ORG: PocketSOC # Please change for production
-#      MISP_MODULE_URL: http://misp-modules
-#      MISP_EMAIL: null@example.com # Please change for production
-#      SECURITY_SALT: MpqM8ofrPtedU70wTzDWIs5R6dwqRAZDMKuzJeK5neo= # PocketSOC use only
-#      ZEROMQ_ENABLED: "yes"
-#    ports:
-#      - 8080:80
-#      - 127.0.0.1:50000:50000
-#    networks:
-#      - mirror
 
 ## Zeek
 
