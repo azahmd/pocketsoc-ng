@@ -173,7 +173,7 @@ services:
       - MYSQL_DATABASE=${MYSQL_DBNAME:-misp}
       - MYSQL_USER=${MYSQL_USERNAME:-misp}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-example123}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-misp}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-example123}
     hostname: ${MYSQL_HOSTNAME:-misp_db}
     image: mysql/mysql-server:8.0
     restart: unless-stopped
@@ -219,7 +219,7 @@ services:
       - MODULES_HOSTNAME=${MODULES_HOSTNAME:-misp_modules}
       - MYSQL_DBNAME=${MYSQL_DBNAME:-misp}
       - MYSQL_HOSTNAME=${MYSQL_HOSTNAME:-misp_db}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-misp}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-example123}
       - MYSQL_USERNAME=${MYSQL_USERNAME:-misp}
       - ORG_NAME=${ORG_NAME:-ORGNAME}
       - REDIS_HOST=${REDIS_HOST:-misp_redis}
@@ -264,7 +264,7 @@ services:
       - ORG_NAME=${ORG_NAME:-ORGNAME}
       - ORG_UUID=${ORG_UUID:-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}
       - REDIS_HOST=${REDIS_HOST:-misp_redis}
-      - WORKERS_PASSWORD=${WORKERS_PASSWORD:-misp}
+      - WORKERS_PASSWORD=${WORKERS_PASSWORD:-example123}
     hostname: ${WORKERS_HOSTNAME:-misp_workers}
     image: jisccti/misp-workers:latest
     restart: unless-stopped
